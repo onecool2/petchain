@@ -185,7 +185,6 @@ def clear_message_dict(room_wxid):
 #------------------------------------------------------------------------------------------- 
 #保存附件操作函数 
 def get_object_dir(msg):
-
     action = msg["action"]
     dir = ""
     if action == 'reportPicMessage':
@@ -314,14 +313,24 @@ def get_room_wxid(msg):
         print("get_room_wxid:" + room_wxid)
     return room_wxid
     
-def get_room_wxid_by_nick(nick):
+def get_room_wxid_by_nick(nick):    #获得群nick对应的wxid
     for k in room_dict: 
         print("room_wxid:" + k + "nick:" + room_dict[k]["nick"])
         if nick in room_dict[k]["nick"]:
             return room_dict[k]["wxid"]
     print("Can not find wxid by nick:" + nick)
     return ""
-    
+
+def get_all_room_nick_list(nick):   #获得群nick开头的所有群list
+    print ("8888888888888888888888888888888888", nick)
+    room_list = []
+    for k in room_dict: 
+        #print (k, room_dict[k])
+        if nick in room_dict[k]["nick"]:
+            print ("群名：%s   值：%s" % (room_dict[k]["nick"], room_dict[k]))
+            room_list.append(room_dict[k]["nick"])
+    return room_list 
+
 def print_room_dict():
     room_list = []
     for k in  room_dict: 

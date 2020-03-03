@@ -127,8 +127,12 @@ def process_text_msg_data(msg_data):
        put_message_dict(room_wxid, message)
     #----------------------------------------------------------
     elif message.startswith("转发"):
-        message_array = message.split("\n" ,2)        #message_array[0] 是转发二字    
-        chatroom_array = message_array[1].split()  #发送对象list
+        message_array = message.split("\n" ,2)        #message_array[0] 是转发二字   
+        if message_array[1].startswith("all_"):
+            nick = message_array[1][4:]      #nick是去掉all_后面的群统配符
+            chatroom_array = get_all_room_nick_list(nick)    # 通过nick[1]得到所有room的nick list
+        else:
+            chatroom_array = message_array[1].split()  #发送对象list
         message = message_array[2]             #转发的消息内容
         if message.startswith("任务"):            #如果消息内容以任务开头
             for i in range(len(chatroom_array)):     #转发到各个群
@@ -140,14 +144,18 @@ def process_text_msg_data(msg_data):
         message = get_message_dict(get_room_wxid(msg_data))
         if message.startswith("注册"):
         #---------------------------------------------------------
+            name = ""
+            phone = ""
+            introducer = ""
+            address = ""
             message_array = message.split("\n")
             for i in range (len(message_array)):
                 if "姓名" in message_array[i]:
                     name = re.split("[:：]", message_array[i])[1].strip()
+                elif "推荐人手机号" in message_array[i]:
+                    introducer = re.split("[:：]", message_array[i])[1].strip()
                 elif "手机号" in message_array[i]:
                     phone = re.split("[:：]", message_array[i])[1].strip()
-                elif "介绍人" in message_array[i]:
-                    introducer = re.split("[:：]", message_array[i])[1].strip()
                 elif "城市区县" in message_array[i]:
                     address = re.split("[:：]", message_array[i])[1].strip()
             ######################## mysql ###############################
@@ -260,14 +268,15 @@ def send_msg():
     res = []
     init_getContact()   #初始化群信息，仅执行一次
     #res = send_dict
-    
+    count = 0
     while not wexin_cmd_queue.empty():
         send_dict = wexin_cmd_queue.get()
         #print ("get !!!!!!!!!!!!!!!!!!!!!!!!!"+ send_dict)
+        count = count + 1
         res.append(send_dict)
+        if count > 4:           #并发消息的数量，4的意思是每次发5条
+            break
 
-    #res = []
-    
     for i in res:
         print("发送给微信的命令开始：")
         print(i)
