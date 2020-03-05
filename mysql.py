@@ -6,6 +6,7 @@ conn = pymysql.connect(
     user='root',
     password='root',
     database='petchain',
+    autocommit= 'True',
     charset='utf8'
 )
 cursor = conn.cursor(pymysql.cursors.DictCursor)
