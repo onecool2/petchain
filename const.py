@@ -116,7 +116,7 @@ exceptid = ['newsapp', \
 replytime = random.randint(1000, 2000)
 
 
-user_dic={}
+
 message_dict={}
 DATA_DIR = "C:\\Users\\Public\\nfs\\data\\langan"
 BLOCKCHAIN_SERVER = "39.99.225.124"
@@ -165,10 +165,6 @@ def get_type(a):
         print("It's dict.")
     elif isinstance(a, set):     # 判断是否为集合
         print("It's set.")
-
-def update_user_dic(task_id, user_id, message):
-    user_dic.setdefault(user_id,{})['Task_id'] = task_id
-    user_dic.setdefault(user_id,{})['Message'] = message
 
 #message相关操作函数
 #------------------------------------------------------------------------------------------- 
@@ -256,21 +252,45 @@ def user_to_blockchain_put_task(json_data):
     print(json.dumps(json_data, sort_keys=True, indent=4, separators=(', ', ': ')))
     r = requests.post("http://" + BLOCKCHAIN_SERVER + ":6666/put_task", json=json_data)
     return r;
-def get_user_task(user_id):
-    current_time = time.strftime("%Y-%m-%d", time.localtime())
-    print ("current_time:" + current_time)
-    task_id = current_time
     
-    if user_id in user_dic:
-        task_id = user_dic[user_id]['Task_id']
+def user_to_blockchain_put_media(json_data):
+    print ("user_to_blockchain media:")
+    print(json.dumps(json_data, sort_keys=True, indent=4, separators=(', ', ': ')))
+    r = requests.post("http://" + BLOCKCHAIN_SERVER + ":6666/put_task", json=json_data)
+    return r;
+
+#回答的任务相关函数
+task_dic={}
+def get_user_task(user_id):
+    #current_time = time.strftime("%Y-%m-%d", time.localtime())
+    
+    task_id = ""
+    
+    if user_id in task_dic:
+        task_id = task_dic[user_id]['Task_id']
+    print ("get task***************************", task_id, user_id)
     return task_id
 
+def set_user_task(user_id, task_id):
+    print ("set task========================", task_id, user_id)
+    task_dic.setdefault(user_id,{})['Task_id'] = task_id
+    return task_id
+'''
+def update_user_dic(task_id, user_id, message):
+    user_dic.setdefault(user_id,{})['Task_id'] = task_id
+    user_dic.setdefault(user_id,{})['Message'] = message
+'''
 #-------------------------------------------------------------------------------------------    
 #消息操作函数
 def get_msg_sender(msg):
     sender = msg["data"]["msg"]["nick"]
     print ("nick:" + sender)
     return sender
+
+def get_msg_sender_wxid(msg):
+    wxid = msg["data"]["msg"]["wxidFrom"]
+    print ("wxid:" + wxid)
+    return wxid
     
 def get_msg_data(request_json):
     return request_json["data"]
@@ -297,6 +317,8 @@ def contract_init():    #初始化群
     
 def get_room_name(msg):
     room_wxid = msg["data"]["msg"]["roomWxid"]
+    if room_wxid == "":      #如果没有room_wxid，说明不是群信息，跳过下面的更新
+        return ""
     room_name = ""
     if room_wxid in room_dict:          #找到了，说明是已经存在的群
         room_name = room_dict[room_wxid]["nick"]

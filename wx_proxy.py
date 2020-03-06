@@ -45,19 +45,25 @@ def process_pic_msg_data(msg_data):
     if get_msg_sender(msg_data) == "区块链公证员":
         return
     room_name = get_room_name(msg_data)
+    if get_user_task(room_name) == "": #如果返回空，说明此时任务已经结束，不需要记录
+        return "", ""
+
     task_id = get_user_task(room_name)
     value = "1"
     FileDir = DATA_DIR + "\\" + task_id + "\\" + room_name + "\\"
     mkdir(FileDir)
     target_file = save_pic_file(FileDir, get_object_dir(msg_data))
-    
+    ######################## DB #######################################
+    mysql_put_task_feedback_media(task_id, room_name, target_file)
     ######################## blockchain ###############################
-    json_data = {'taskid_userid': task_id + room_name, 'message': target_file}      #这块应该修改，发送照片，应该是另一个接口，现在是phone和message
-    r = user_to_blockchain(json_data)
+    #json_data = {'taskid_userid': task_id + room_name, 'message': target_file}      #这块应该修改，发送照片，应该是另一个接口，现在是phone和message
+    json_data = {'task_id': task_id , 'content': target_file}
+    r = user_to_blockchain_put_media(json_data)
     Hash = json.loads(r.text).get('Hash')
     ###################################################################
     #json_data = {'action': "user_to_proxy", 'value': value, 'task_id': task_id, 'room_name': room_name, 'message': FileDir+msg['FileName'], 'Hash': Hash}
     reply_msg = ('您的信息已被记录 http://39.99.224.190/share/' + task_id + "/" + room_name + "/" + target_file + '\n区块链hash:' + Hash)
+    reply_msg = ('您的信息已被记录, 区块链hash:' + Hash)
     #user_to_proxy(json_data)
        #http://localhost/share/2020-02-24/19487307280%40chatroom/
        #http://39.99.224.190/2020-02-24/19487307280@chatroom/C:\Users\Public\nfs\data\langan\2020-02-24\19487307280@chatroom\1484ec68e1f4c18966e9a595583af1aa.jpg
@@ -68,19 +74,24 @@ def process_video_msg_data(msg_data):
     if get_msg_sender(msg_data) == "区块链公证员":
         return
     room_name = get_room_name(msg_data)
+    if get_user_task(room_name) == "": #如果返回空，说明此时任务已经结束，不需要记录
+        return "", ""
+    room_name = get_room_name(msg_data)
     task_id = get_user_task(room_name)
     value = "1"
     FileDir = DATA_DIR + "\\" + task_id + "\\" + room_name + "\\"
     mkdir(FileDir)
     target_file = save_video_file(FileDir, get_object_dir(msg_data))
-    
+    ######################## DB #######################################
+    mysql_put_task_feedback_media(task_id, room_name, target_file)
     ######################## blockchain ###############################
-    json_data = {'taskid_userid': task_id + room_name, 'message': target_file}
-    r = user_to_blockchain(json_data)
+    json_data = {'task_id': task_id , 'content': target_file}
+    r = user_to_blockchain_put_media(json_data)
     Hash = json.loads(r.text).get('Hash')
     ###################################################################
     #json_data = {'action': "user_to_proxy", 'value': value, 'task_id': task_id, 'room_name': room_name, 'message': FileDir+msg['FileName'], 'Hash': Hash}
-    reply_msg = ('您的信息已被记录 http://39.99.224.190/share/' + task_id + "/" + room_name + "/" + target_file + '\n区块链hash:' + Hash)
+    #reply_msg = ('您的信息已被记录 http://39.99.224.190/share/' + task_id + "/" + room_name + "/" + target_file + '\n区块链hash:' + Hash)
+    reply_msg = ('您的信息已被记录, 区块链hash:' + Hash)
     #user_to_proxy(json_data)
        #http://localhost/share/2020-02-24/19487307280%40chatroom/
        #http://39.99.224.190/2020-02-24/19487307280@chatroom/C:\Users\Public\nfs\data\langan\2020-02-24\19487307280@chatroom\1484ec68e1f4c18966e9a595583af1aa.jpg
@@ -90,19 +101,24 @@ def process_voice_msg_data(msg_data):
     if get_msg_sender(msg_data) == "区块链公证员":
         return
     room_name = get_room_name(msg_data)
+    if get_user_task(room_name) == "":      #如果返回空，说明此时任务已经结束，不需要记录
+        return "", ""
+    room_name = get_room_name(msg_data)
     task_id = get_user_task(room_name)
     value = "1"
     FileDir = DATA_DIR + "\\" + task_id + "\\" + room_name + "\\"
     mkdir(FileDir)
     target_file = save_voice_file(FileDir, get_object_dir(msg_data))
-    
+    ######################## DB #######################################
+    mysql_put_task_feedback_media(task_id, room_name, target_file)
     ######################## blockchain ###############################
-    json_data = {'taskid_userid': task_id + room_name, 'message': target_file}
-    r = user_to_blockchain(json_data)
+    json_data = {'task_id': task_id , 'content': target_file}
+    r = user_to_blockchain_put_media(json_data)
     Hash = json.loads(r.text).get('Hash')
     ###################################################################
     #json_data = {'action': "user_to_proxy", 'value': value, 'task_id': task_id, 'room_name': room_name, 'message': FileDir+msg['FileName'], 'Hash': Hash}
-    reply_msg = ('您的信息已被记录 http://39.99.224.190/share/' + task_id + "/" + room_name + "/" + target_file + '\n区块链hash:' + Hash)
+    #reply_msg = ('您的信息已被记录 http://39.99.224.190/share/' + task_id + "/" + room_name + "/" + target_file + '\n区块链hash:' + Hash)
+    reply_msg = ('您的信息已被记录, 区块链hash:' + Hash)
     #user_to_proxy(json_data)
        #http://localhost/share/2020-02-24/19487307280%40chatroom/
        #http://39.99.224.190/2020-02-24/19487307280@chatroom/C:\Users\Public\nfs\data\langan\2020-02-24\19487307280@chatroom\1484ec68e1f4c18966e9a595583af1aa.jpg
@@ -119,12 +135,45 @@ def process_text_msg_data(msg_data):
 
     reply_msg = ""
     message = get_text_content(msg_data)
+       
+    if message.startswith("任务打分"):
+        executor = ""
+        task_id = ""
+        score = ""
+        summary = ""
+        message_array = message.split("\n")        #把所有文字按回车分段  
+        for i in range (len(message_array)):
+            
+            if i < 1:  #如果是没有冒号的行，说明是“任务打分”四个字，跳过它
+                continue
+            print("11111111111111:", message_array[i])
+            if "群号" in message_array[i]:
+                executor = re.split("[:：]", message_array[i])[1].strip()
+            elif "任务" in message_array[i]:
+                task_id = re.split("[:：]", message_array[i])[1].strip()
+            elif "得分" in message_array[i]:
+                score = re.split("[:：]", message_array[i])[1].strip()
+            elif "总结" in message_array[i]:
+                summary = re.split("[:：]", message_array[i])[1].strip()      
+        ######################## blockchain ###############################
+        content = score + summary
+        json_data = {'task_id': task_id + executor, 'content': content}
+        r = user_to_blockchain_put_task(json_data)
+        Hash = json.loads(r.text).get('Hash')     
+        ######################## blockchain ###############################        
+        reply_msg = mysql_score_task(executor, task_id, score, summary) + "区块链Hash：" + Hash
+        room_wxid = get_msg_sender_wxid(msg_data)
     #---------------------------------------------------------
-    if message.startswith("注册"):
-       put_message_dict(room_wxid, message)
+    elif message.startswith("任务详情"):
+    
+        reply_msg = mysql_list_task()
+        room_wxid = get_msg_sender_wxid(msg_data)
+    #---------------------------------------------------------
+    elif message.startswith("注册"):
+        put_message_dict(room_wxid, message)
     #---------------------------------------------------------        
     elif message.startswith("任务"):
-       put_message_dict(room_wxid, message)
+        put_message_dict(room_wxid, message)
     #----------------------------------------------------------
     elif message.startswith("转发"):
         message_array = message.split("\n" ,2)        #message_array[0] 是转发二字   
@@ -186,25 +235,37 @@ def process_text_msg_data(msg_data):
             Hash = json.loads(r.text).get('Hash')
             ###################################################################
             reply_msg = ('您的信息已被记录, 区块链hash:' + Hash)
-        else:
-            print("不支持的消息或者没有消息需要记录", message)
-    else:
-        task_id = "0"
+        #----------------------------------------------------------
+    elif message.startswith("&<"):              #开始回答问题 &<接任务id
+        task_id = message[2:]                   #取出任务id。原信息是：&<任务1234
+        set_user_task(room_name, task_id)       #放到内存中的task_dic字典里 room_name 是群名
+    elif message.startswith(">&"):              #回答问题结束 &<接任务id，加入end标志
+        set_user_task(room_name, "")
+    elif get_user_task(room_name) != "":
+        task_id = get_user_task(room_name) 
         FileDir = DATA_DIR + "\\" + task_id + "\\" + room_name + "\\"   
         mkdir(FileDir)
         target_file = save_text_file(FileDir, get_text_content(msg_data))
-    
+        
+        ######################## DB #######################################
+        mysql_put_task_feedback_media(task_id, room_name, target_file) 
         ######################## blockchain ###############################
-        json_data = {'phone': task_id , 'message': message}
-        r = user_to_blockchain_put_broker(json_data)
+        json_data = {'task_id': task_id , 'content': message}
+        r = user_to_blockchain_put_media(json_data)
         Hash = json.loads(r.text).get('Hash')
         ###################################################################
         #json_data = {'action': "user_to_proxy", 'value': value, 'task_id': task_id, 'room_name': room_name, 'message': FileDir+msg['FileName'], 'Hash': Hash}
-        reply_msg = ('您的信息已被记录 http://39.99.224.190/share/' + task_id + "/" + room_name + "/" + target_file + '\n区块链hash:' + Hash)
+        reply_msg = ('您的信息已被记录, 区块链hash:' + Hash)
         #user_to_proxy(json_data)
         #http://localhost/share/2020-02-24/19487307280%40chatroom/
         #http://39.99.224.190/2020-02-24/19487307280@chatroom/C:\Users\Public\nfs\data\langan\2020-02-24\19487307280@chatroom\1484ec68e1f4c18966e9a595583af1aa.jpg
-    return reply_msg, get_room_wxid(msg_data)  
+    else:
+        print("不支持的消息或者没有消息需要记录", message)
+    
+    #else:
+        
+    
+    return reply_msg, room_wxid          #在开始部分获取room_wxid因为有的时候是返回给个人的不全是 get_room_wxid(msg_data)  
     
 #-------------------------------------------------------------------------------------------
 @app.route('/recieve_msg', methods=['POST'])
