@@ -122,7 +122,22 @@ DATA_DIR = "C:\\Users\\Public\\nfs\\data\\langan"
 BLOCKCHAIN_SERVER = "39.99.225.124"
 
 HELLO_WORDS = "老师您好！我是公证员，负责把咱们的有效信息上传到区块链上。群里另一位是宠医助手，您有任何问题都可以随时联系她！"
+last_time_use_mysql = {}     #和mysql保持链接，如果超过last_time_use_mysql == 0说明很久没有联系过mysql了。
 
+def get_last_time_use_mysql():
+    print ("get_last_time_use_mysql")
+    if "current_time" in last_time_use_mysql.keys():
+        last_time_use_mysql["current_time"] = last_time_use_mysql["current_time"] - 1
+        print ("get_last_time_use_mysql", last_time_use_mysql["current_time"])
+        return last_time_use_mysql["current_time"]
+    else:
+        #print ("return 0 get_last_time_use_mysql", last_time_use_mysql["current_time"])
+        return 0
+
+def set_last_time_use_mysql():
+    print ("set_last_time_use_mysql")
+    last_time_use_mysql["current_time"] = 100
+    
 #系统io操作函数
 #------------------------------------------------------------------------------------------- 
 def modify_path(path):
@@ -310,6 +325,7 @@ def get_text_content(msg):
 #群操作函数
 room_dict={}        #保存群的字典+列表结构
 
+
 def contract_init():    #初始化群
     if not bool(room_dict):
         return 1
@@ -355,10 +371,14 @@ def get_all_room_nick_list(nick):   #获得群nick开头的所有群list
 
 def print_room_dict():
     room_list = []
+    num = 0
     for k in  room_dict: 
         #print (k, room_dict[k])
         print ("群名：%s   值：%s" % (room_dict[k]["nick"], room_dict[k]))
         room_list.append(room_dict[k])
+        if "chongliubroker" in room_dict[k]["nick"]:
+            num = num +1
+    print ("chongliubroker群共:", num)
     return room_list
          
 def update_room_dict(groupList):            #收到reportContact事件后调用的，可能在开始会被调用n次，因为微信端返回的慢，轮询的快

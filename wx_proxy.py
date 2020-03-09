@@ -262,9 +262,7 @@ def process_text_msg_data(msg_data):
     else:
         print("不支持的消息或者没有消息需要记录", message)
     
-    #else:
-        
-    
+    #else:          
     return reply_msg, room_wxid          #在开始部分获取room_wxid因为有的时候是返回给个人的不全是 get_room_wxid(msg_data)  
     
 #-------------------------------------------------------------------------------------------
@@ -283,6 +281,8 @@ def recieve_msg():
     msg_data = get_msg_data(request.json)
     action = get_msg_action(msg_data)
     print ("action:" + action)
+    
+   
     
     if action == "reportContact":
         update_room_dict(msg_data["data"]["groupList"]) 
@@ -325,7 +325,11 @@ def send_text_to_user(reply_msg, wxid):
 def send_msg():
     #cwxid  = request.args.get('wxid')
     #pid = request.args.get('pid')
-
+    
+    if get_last_time_use_mysql() < 1:
+        ping_db()
+        set_last_time_use_mysql()     #和mysql保持链接，如果超过last_time_use_mysql == 0说明很久没有联系过mysql了。
+        
     res = []
     init_getContact()   #初始化群信息，仅执行一次
     #res = send_dict

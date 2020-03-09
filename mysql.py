@@ -1,4 +1,5 @@
 import pymysql
+import time
 
 conn = pymysql.connect(
     host='127.0.0.1',
@@ -12,7 +13,21 @@ conn = pymysql.connect(
 cursor = conn.cursor(pymysql.cursors.DictCursor)
 
 
+
+
+
+
+def ping_db():
+    last_time_use_mysql = 100;
+    print("long time not talk about mysql")
+    current_time = time.strftime("%H-%M-%S", time.localtime())
+    sql = "update ping set currenttime='%s' where id=123" %(current_time)
+    print ("SQL:", sql)
+    ret = cursor.execute(sql)
+    conn.commit()
+    
 def mysql_put_broker(phone, name, introducer, address):
+    last_time_use_mysql = 100;
     sql = "insert into broker (phone, name, introducer, address) values(" + '\''+ phone + '\', '+ '\'' + name + '\', '+ '\'' + introducer + '\', '+ '\''+ address + '\''+")"
     
     ret = cursor.execute(sql)
@@ -21,13 +36,14 @@ def mysql_put_broker(phone, name, introducer, address):
     conn.commit()
 
 def mysql_put_task(taskid, executor, content):
-
+    last_time_use_mysql = 100;
     sql = "insert into task (taskid, executor, content) values(" + '\'' + taskid + '\'' + ', \''+ executor + '\'' + ', \''+content + '\''+")"
     print (sql)
     cursor.execute(sql)
     conn.commit()
 
 def mysql_list_task(executor, task_id):
+    last_time_use_mysql = 100;
     sql = "select * from task where taskid='%s' and executor='%s'" %(task_id, executor)
     print (sql)
     task_list = ""
@@ -39,6 +55,7 @@ def mysql_list_task(executor, task_id):
     return task_list
     
 def mysql_score_task(executor, task_id, score, summary):
+    last_time_use_mysql = 100;
     #update task set score=20, summary='123' where taskid=123468 and executor='lzz12347'
     sql = "update task set score=%s, summary='%s' where taskid='%s' and executor='%s'" %(score, summary, task_id, executor)
     print ("SQL:", sql)
@@ -47,6 +64,7 @@ def mysql_score_task(executor, task_id, score, summary):
     return mysql_list_task(executor, task_id)
     
 def mysql_put_task_feedback_media(taskid, executor, feedback_media):
+    last_time_use_mysql = 100;
     sql = "select feedback_media from task where taskid='%s' and executor='%s'" %(taskid, executor)
     print ("SQL:", sql)
     ret = cursor.execute(sql)
