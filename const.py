@@ -204,8 +204,21 @@ def get_object_dir(msg):
         dir = msg["data"]["msg"]["videoIndex"]
     elif action == 'reportVoiceMessage':
         dir = msg["data"]["msg"]["voiceIndex"]
+    elif action == 'reportFileMessage':
+        dir = msg["data"]["msg"]["fileIndex"]
     return  dir 
+
+
+def save_File_file(FileDir, file):
+    print ("File *********" + file)
+    print ("FileDir *********" + FileDir)
     
+    file_name = object_dir.split('\\');
+    target_file = FileDir + file_name[-1]
+    shutil.copyfile(object_dir, target_file)
+   
+    return target_file # 返回的是文件名，没有路径，如果需要返回文件所在本机完整路径，返回target_file 
+        
 def save_text_file(FileDir, text):
     print ("text *********" + text)
     print ("FileDir *********" + FileDir)

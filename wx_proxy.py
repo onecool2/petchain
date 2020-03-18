@@ -40,7 +40,26 @@ def writelog(fpath, data):
 def admin():
     return jsonify(print_room_dict())
     
-#-------------------------------------------------------------------------------------------    
+#-------------------------------------------------------------------------------------------   
+def process_File_Msg_data(msg_data):
+    if get_msg_sender(msg_data) == "区块链公证员":
+        return
+    if get_user_task(room_name) == "": #如果返回空，说明此时任务已经结束，不需要记录
+        return "", ""
+    task_id = get_user_task(room_name)
+    value = "1"
+    FileDir = DATA_DIR + "\\" + task_id + "\\" + room_name + "\\"
+    mkdir(FileDir)
+    target_file = save_File_file(FileDir, get_object_dir(msg_data))
+    ######################## DB #######################################
+    mysql_put_task_feedback_media(task_id, room_name, target_file)
+    ######################## blockchain ###############################
+    json_data = {'task_id': task_id , 'content': target_file}
+    r = user_to_blockchain_put_media(json_data)
+    Hash = json.loads(r.text).get('Hash')
+    reply_msg = ('您的信息已被记录, 区块链hash:' + Hash)
+    return reply_msg, get_room_wxid(msg_data) 
+    
 def process_pic_msg_data(msg_data):
     if get_msg_sender(msg_data) == "区块链公证员":
         return
@@ -227,6 +246,8 @@ def process_text_msg_data(msg_data):
                     taskid = re.split("[:：]", message_array[i])[1].strip()
                 elif "内容" in message_array[i]:
                     content = re.split("[:：]", message_array[i])[1].strip()
+                elif content != "":             #后加的内容，因为内容有可能会有多行
+                    content = content + message_array[i]
             ######################## mysql ###############################
             mysql_put_task(taskid, executor, content)
             ######################## blockchain ###############################
@@ -300,7 +321,8 @@ def recieve_msg():
     
     elif action == "reportTextMessage":
         reply_msg, wxid = process_text_msg_data(msg_data)
-        
+    elif action == "reportFileMessage":
+        reply_msg, wxid = process_File_Msg_data(msg_data)
     else:
         return jsonify(res)
         #app.logger.info("recv data is:%s", str(request.get_data()))
