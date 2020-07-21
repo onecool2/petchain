@@ -396,7 +396,7 @@ def print_room_dict():
          
 def update_room_dict(groupList):            #收到reportContact事件后调用的，可能在开始会被调用n次，因为微信端返回的慢，轮询的快
     for i in range(len(groupList)):
-        #print ("序号：%s   值：%s" % (i + 1, groupList[i]))
+        print ("序号：%s   值：%s" % (i + 1, groupList[i]))
         wxid = groupList[i]["wxid"]
  
         if "nick" in groupList[i]:
